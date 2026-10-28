@@ -1,0 +1,5 @@
+# Never commit these: they hold employer names and raw Bullhorn data
+*.csv
+kit/redactions.json
+report.json
+__pycache__/
