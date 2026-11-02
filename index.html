@@ -77,6 +77,10 @@ main.gut { padding-block: 18px 64px; }
 .count b { color: var(--fg); font-family: var(--display); font-size: 1.25rem; }
 .chip { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 999px; background: var(--char); color: #FFFFFF; padding: 5px 8px 5px 12px; font-size: .88rem; font-weight: 700; cursor: pointer; }
 .chip span { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.18); font-size: .85rem; }
+.editbtn { display: inline-flex; align-items: center; gap: 6px; border: 2px solid var(--btn); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .92rem; cursor: pointer; }
+.editbtn:hover { background: var(--btn); color: var(--on-btn); }
+.editbtn svg { width: 16px; height: 16px; }
+.who .editbtn { flex-basis: auto; margin-top: 4px; }
 .linkbtn { border: 0; background: none; color: var(--link); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 4px; font-size: .92rem; }
 
 .cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; align-items: start; }
@@ -427,7 +431,7 @@ function renderDetail(j) {
     <div class="pills"><span class="pill">${esc(j.category)}</span><span class="pill">${esc(j.typeNote || j.type)}</span><span class="pill">${esc(j.state)}</span><span class="pill q">Job #${esc(j.id)}</span><span class="pill q">Posted ${fmt(j.added)}</span></div>
     <section class="applybox" id="applybox" aria-label="Apply">
       <h4>Interested? Apply through SBH</h4>
-      ${ok ? `<div class="who"><span class="jdline">Your job developer: <b>${m.jd ? esc(m.jd[1]) : "None / not sure"}</b></span><span>Applying as <b>${esc(m.name)}</b></span><span>${esc(m.phone || m.email)}</span><button class="linkbtn" type="button" id="edit">Change</button></div>` : infoForm(m, j)}
+      ${ok ? `<div class="who"><span class="jdline">Your job developer: <b>${m.jd ? esc(m.jd[1]) : "None / not sure"}</b></span><span>Applying as <b>${esc(m.name)}</b></span><span>${esc(m.phone || m.email)}</span><button class="editbtn" type="button" id="edit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Change job developer or info</button></div>` : infoForm(m, j)}
       <a class="apply inbox" href="#" id="apply" role="button">${label(m)}</a>
       <div id="slot"></div>
     </section>
