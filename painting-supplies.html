@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Painting Class Supplies</title>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--ink:#1f2328;--mute:#626a73;--line:#e3e3df;--accent:#33383d;--done:#9aa1a8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--accent);color:#fff;padding:22px 16px 18px}
+header .wrap,main{max-width:760px;margin:0 auto}
+h1{margin:0 0 4px;font-size:1.5rem}
+header p{margin:0;opacity:.85;font-size:.95rem}
+.bar{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px}
+.bar .wrap{max-width:760px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.prog b{font-weight:600}
+.track{height:6px;background:var(--line);border-radius:4px;margin-top:4px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .2s}
+button{font:inherit;font-size:.9rem;border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;padding:6px 14px;cursor:pointer}
+button.on{background:var(--accent);color:#fff}
+main{padding:12px 16px 40px}
+.note{color:var(--mute);font-size:.92rem;margin:8px 0 4px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:16px 0;overflow:hidden}
+h2{margin:0;font-size:1.05rem;padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+h2 small{color:var(--mute);font-weight:400}
+h3{margin:0;padding:10px 16px 2px;font-size:.85rem;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+ul{list-style:none;margin:0;padding:0}
+li{border-top:1px solid var(--line)}
+h2+ul li:first-child{border-top:0}
+label{display:flex;gap:12px;padding:12px 16px;cursor:pointer;align-items:flex-start}
+input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--accent)}
+.name{font-weight:600}
+.name.plain{font-weight:400}
+.det{display:block;color:var(--mute);font-size:.9rem}
+.det a{color:var(--accent)}
+.tag{display:inline-block;font-size:.75rem;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-left:4px;color:var(--mute);font-weight:400}
+.warn{color:#9a3b00}
+li.done .name,li.done .det{color:var(--done);text-decoration:line-through}
+body.hide li.done{display:none}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Painting Class Supply List</h1>
+<p>Handyman – Learn Interior Painting · Tue Nov 17, Thu Nov 19, Sun Nov 22</p>
+</div></header>
+<div class="bar"><div class="wrap">
+<div class="prog"><b id="cnt">0 of 0</b> picked up<div class="track"><div class="fill" id="fill"></div></div></div>
+<button id="hide">Hide picked up</button>
+<button id="reset">Clear ticks</button>
+</div></div>
+<main>
+<p class="note">Tap an item to tick it off. Ticks are saved on this phone only. “(each)” means one per student; everything else is shared by the class.</p>
+<div id="list"></div>
+</main>
+<script>
+const HF = 'Harbor Freight';
+const S = [
+ ['Room Prep & Protection', [
+  ['Brown masking paper drop cloth, 2.5 ft x 1,000 ft – 2 rolls', '$42.50 per roll ($85.00). Covers the whole floor; double up in walkways.', 'Home Depot', 'https://www.homedepot.com/p/Pratt-Retail-Specialties-2-5-ft-x-1000-ft-Brown-Masking-Paper-Drop-Cloth-30-x1000-MP/326753287'],
+  ['COVERPRO canvas drop cloth, 5 ft x 5 ft – 1', '$5.99 (marked down from $11.98). For the paint-pouring station.', HF, 'https://www.harborfreight.com/5-x-5-canvas-drop-cloth-73105.html'],
+  ['Plastic sheeting', 'Cover tables and the kitchen closet doorway.'],
+  ['Extension cords and power strip'], ['Buckets'], ['Trash bags'], ['Shop vac or broom and dustpan'], ['Door wedges'], ['“Wet Paint” signs']]],
+ ['Safety', [
+  ['RANGER N95 respirator masks with valve, 10-pack – 2 packs', '$12.99 each ($25.98). One per student, labeled and reused all 3 sessions.', HF],
+  ['RANGER work boot/shoe covers, 50-pack – 2 packs', '$11.99 each ($23.98). In-store only. One pair per student per session.', HF],
+  ['Gloves (each)'], ['Goggles (each)'], ['First aid kit'], ['Non-contact voltage tester'], ['Step stool']]],
+ ['Cleaning', [['Degreaser (TSP substitute or Krud Kutter)'], ['Sponges (each)'], ['Rags or lint-free cloths']]],
+ ['Wall Repair & Patching', [
+  ['Scrap sheetrock pieces'], ['Joint compound'], ['Spackle'], ['Mesh tape'], ['Mesh patches'], ['Wood backing pieces'], ['Drywall screws (assorted)'],
+  ['QUINN 3" scraper (putty knife) – 15', '$5.49 each ($82.35).', HF],
+  ['QUINN 6" blue steel taping knife – 15', '$5.99 each ($89.85). !Currently unavailable – check back or find another 6" knife.', HF],
+  ['Mud pan (each)'], ['Utility knife and blades (each)'], ['Sanding sponges (each)'], ['Drywall jab saw'],
+  ['PITTSBURGH 25 ft. QuikFind tape measure – 15', '$4.99 each ($74.85). In-store only. Students keep it. Plus pencils and a straightedge (pencils, not wax crayons, on walls being painted).', HF],
+  ['Stud finder']]],
+ ['Tools', [
+  ['Drills with bits, batteries and chargers (shared)'], ['Screw setter bit'], ['Screwdrivers'],
+  ['QUINN 14-in-1 painters tool – 15', '$3.99 each on sale, was $4.79 ($59.85).', HF],
+  ['Zip-top bags']]],
+ ['Door Prep & Painting', [
+  ['220-grit sandpaper or liquid deglosser'], ['Tack cloths'], ['White semi-gloss door/trim paint – 1 gallon'],
+  ['4" foam or mini rollers (each)', 'Covered by the AVANTI kit’s mini roller; only if sourcing separately.'],
+  ['Masking paper, 15 in. x 60 yd – 2 rolls', '$5.99 each ($11.98). In-store only, limited stock. For masking trim and doors.', HF]]],
+ ['Wall Painting', [
+  ['Lavender wall paint to match existing walls – one 5-gallon bucket'], ['Primer – 1 gallon'],
+  ['AVANTI premium paint kit, 9-piece – 15', '$17.99 each ($269.85). Each kit: tray + liner, angled brush, 9" roller + 2 covers, mini roller + 2 covers. Students keep the kit.', HF],
+  ['9 in. disposable tray liners, 5-pack – 3 packs', '$4.99 each ($14.97). !Currently unavailable – extras for clean swaps between sessions.', HF],
+  ['5-gallon paint bucket grid – 1', '$4.99. Only if using the shared 5-gallon bucket.', HF],
+  ['Pail with brush clip – 15', '$2.99 each ($44.85). For cutting in with a brush.', HF],
+  ['Paint trimmer (edging guard) – 15', '$2.49 each ($37.35). In-store only.', HF],
+  ['STIKTEK painter’s tape, 60 yd x 0.94 in. – 5 rolls', '$5.99 each ($29.95).', HF],
+  ['Stir sticks'], ['Caulk and caulk gun (optional)']],
+  ['Covered by the AVANTI kit – only if sourcing separately', [
+  ['Paint trays and liners (each)'], ['Roller frames, small and big (each)'], ['Roller covers, 3/8" nap (each)'], ['Angled sash brush, 2–2.5" (each)']]]]
+];
+const KEY = 'sbh-paint-supplies';
+let done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} };
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let html = '', n = 0;
+const items = list => '<ul>' + list.map(([name, det, store, url]) => {
+  const id = 'i' + (n++);
+  let d = det ? esc(det).replace(/!(.*)$/, '<span class="warn">$1</span>') : '';
+  if (store) d += (d ? ' ' : '') + (url ? `<a href="${url}" target="_blank" rel="noopener">View at ${store}</a>` : esc(store));
+  return `<li data-id="${id}"><label><input type="checkbox"><span><span class="name${det ? '' : ' plain'}">${esc(name)}</span>${d ? `<span class="det">${d}</span>` : ''}</span></label></li>`;
+}).join('') + '</ul>';
+for (const [title, list, sub] of S) {
+  const c = list.length + (sub ? sub[1].length : 0);
+  html += `<section><h2>${esc(title)} <small>${c} items</small></h2>${items(list)}${sub ? `<h3>${esc(sub[0])}</h3>${items(sub[1])}` : ''}</section>`;
+}
+document.getElementById('list').innerHTML = html;
+const lis = [...document.querySelectorAll('li[data-id]')];
+function paint() {
+  let k = 0;
+  lis.forEach(li => { const on = !!done[li.dataset.id]; li.classList.toggle('done', on); li.querySelector('input').checked = on; if (on) k++; });
+  document.getElementById('cnt').textContent = `${k} of ${lis.length}`;
+  document.getElementById('fill').style.width = (100 * k / lis.length) + '%';
+}
+lis.forEach(li => li.querySelector('input').addEventListener('change', e => { if (e.target.checked) done[li.dataset.id] = 1; else delete done[li.dataset.id]; save(); paint(); }));
+const hb = document.getElementById('hide');
+hb.onclick = () => hb.classList.toggle('on', document.body.classList.toggle('hide'));
+document.getElementById('reset').onclick = () => { done = {}; save(); paint(); };
+paint();
+</script>
+</body>
+</html>
