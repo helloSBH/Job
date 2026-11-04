@@ -1,376 +1,420 @@
-<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex"><title>Painting Class Budget</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Interior Painting Supplies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: a sticky budget bar on top, then two checklist sections (per student, whole class) as rows of item / price / qty / line total */
 :root{
-  --bg:#F6F8F7; --surface:#FFFFFF; --fg:#1E1B1C; --muted:#5B6560; --line:#D8DFDB;
-  --accent:#5EDBA5; --accent-ink:#0E6B45; --accent-soft:#E3F7EC; --on-accent:#14211B;
-  --warn:#B4541A; --warn-soft:#FBEBDF; --bad:#B42318; --bad-soft:#FDE7E5;
-  --display:"League Spartan","Segoe UI",Arial,sans-serif;
-  --body:"Atkinson Hyperlegible","Segoe UI",Arial,sans-serif;
+  --navy:#0B4E8F; --deep:#062544; --deeper:#041a31; --card:#0d3460; --card2:#123f72;
+  --sky:#BFE4F9; --mint:#6FCB9F; --cream:#F3EFE7; --ink:#ffffff; --mute:#9db6cf; --line:#1d4b7d;
+  --bad:#ff8a7a; --warn:#ffc27a;
+  --disp:"Bebas Neue",Impact,"Arial Narrow",sans-serif; --body:"Outfit","Segoe UI",Arial,sans-serif;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#111614; --surface:#1A211E; --fg:#E8EEEB; --muted:#9DABA4; --line:#2E3934;
-  --accent:#5EDBA5; --accent-ink:#6FE3B0; --accent-soft:#1C3329; --on-accent:#0E1A13;
-  --warn:#F0A060; --warn-soft:#3A2717; --bad:#FF8A80; --bad-soft:#3B1C1A; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#111614; --surface:#1A211E; --fg:#E8EEEB; --muted:#9DABA4; --line:#2E3934;
-  --accent:#5EDBA5; --accent-ink:#6FE3B0; --accent-soft:#1C3329; --on-accent:#0E1A13;
-  --warn:#F0A060; --warn-soft:#3A2717; --bad:#FF8A80; --bad-soft:#3B1C1A; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
-.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:grid;gap:22px}
-h1{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,4.5vw,2.5rem);line-height:1.05;margin:0;text-wrap:balance}
-h2{font-family:var(--display);font-weight:700;font-size:1.35rem;margin:0}
-.eyebrow{font-family:var(--display);font-weight:700;font-size:.8rem;letter-spacing:.12em;color:var(--accent-ink);text-transform:uppercase}
-.sub{color:var(--muted);margin:6px 0 0;max-width:62ch}
+html{color-scheme:dark}
+body{margin:0;background:var(--deeper);color:var(--ink);font:15px/1.4 var(--body);overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+input:focus-visible,button:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
 
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;gap:14px;box-shadow:0 6px 18px -14px rgba(0,0,0,.35)}
-.controls{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:end}
-.ctl{display:grid;gap:6px;min-width:0}
-.ctl label{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.slider-row{display:flex;gap:12px;align-items:center}
-input[type=range]{width:min(240px,52vw);accent-color:var(--accent-ink)}
-input[type=number],input[type=text]{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:0}
-input:focus-visible,button:focus-visible{outline:2px solid var(--accent-ink);outline-offset:2px}
-.students-num{width:64px;text-align:center;font-weight:700}
-.money{position:relative;display:inline-flex;align-items:center}
-.money span{position:absolute;left:9px;color:var(--muted);pointer-events:none}
-.money input{padding-left:20px;width:110px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.stat{background:var(--bg);border-radius:10px;padding:10px 12px;display:grid;gap:2px;min-width:0}
-.stat .k{font-size:.76rem;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-.stat .v{font-family:var(--display);font-weight:700;font-size:1.45rem;font-variant-numeric:tabular-nums}
-.stat .s{font-size:.8rem;color:var(--muted)}
-.stat.left.ok{background:var(--accent-soft)}
-.stat.left.over{background:var(--bad-soft)}
-.stat.left.over .v{color:var(--bad)}
-.meter{height:12px;border-radius:6px;background:var(--bg);border:1px solid var(--line);overflow:hidden;display:flex}
-.meter i{display:block;height:100%}
-.meter .ps{background:var(--accent)}
-.meter .cw{background:var(--accent-ink)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted);align-items:center}
-.legend b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
-.flag{font-size:.82rem;color:var(--warn);font-weight:700}
+/* hero */
+.hero{position:relative;padding:22px 16px 26px;background:linear-gradient(180deg,rgba(4,26,49,0) 55%,var(--deeper)),radial-gradient(120% 90% at 85% 0%,#1b5fa3 0%,var(--deep) 55%,var(--deeper) 100%);overflow:hidden}
+.hero .in{max-width:1200px;margin:0 auto;position:relative}
+.logo{float:right;background:#fff;border-radius:10px;padding:6px 10px;margin:0 0 12px 12px}
+.logo img{display:block;height:54px;width:auto}
+.brush{position:relative;display:inline-block;padding:18px 34px 14px 22px;margin:10px 0 6px -16px}
+.brush svg{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.brush>*{position:relative;z-index:1}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(2.6rem,9vw,5.2rem);line-height:.9;margin:0;letter-spacing:.01em}
+.tag{font-family:var(--disp);font-size:clamp(1.3rem,4.2vw,2.2rem);color:var(--sky);letter-spacing:.02em;margin-top:4px}
+.dates{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px;clear:both}
+.date{background:var(--cream);color:var(--navy);border-radius:12px;overflow:hidden;text-align:center;min-width:86px;box-shadow:0 6px 18px -10px #000}
+.date b{display:block;background:var(--navy);color:#fff;font:700 .85rem var(--body);padding:4px 8px;letter-spacing:.04em;border:2px solid var(--cream);border-bottom:0;border-radius:12px 12px 0 0}
+.date span{display:block;font:400 2rem/1 var(--disp);padding:4px 8px 2px}
+.date small{display:block;font-size:.7rem;color:#4a5b6d;padding:0 6px 6px;font-weight:600}
+.lead{color:var(--mute);max-width:60ch;margin:12px 0 0;font-size:.95rem}
 
-section{display:grid;gap:10px}
-.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:8px}
-.sec-head p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
-.sec-total{font-family:var(--display);font-weight:700;font-size:1.1rem;font-variant-numeric:tabular-nums}
-.list{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.row{display:grid;grid-template-columns:28px minmax(0,1fr) 112px 92px 96px 96px;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
-.row.class{grid-template-columns:28px minmax(0,1fr) 112px 92px 96px}
-.row:first-child{border-top:0}
-.row.head{background:var(--bg);font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-block:8px}
-.row.off .name,.row.off .tot{opacity:.5}
-.row input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent-ink);margin:0}
-.name{min-width:0;display:grid;gap:2px}
-.name input{border-color:transparent;background:transparent;padding:2px 4px;font-weight:700;width:100%}
-.name input:hover{border-color:var(--line)}
-.note{font-size:.82rem;color:var(--muted);padding-left:4px}
-.chip{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--warn-soft);color:var(--warn);margin-left:4px}
-.qty input{width:72px;text-align:right}
-.price .money input{width:100px;text-align:right}
-.packs{font-size:.9rem;font-variant-numeric:tabular-nums;color:var(--muted);text-align:right}
-.tot{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.mlabel{display:none}
-.actions{display:flex;flex-wrap:wrap;gap:10px}
-button{font:inherit;font-weight:700;border-radius:9px;padding:9px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
-button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-button.ghost{background:transparent}
-.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.9rem;color:var(--warn)}
-.toast{font-size:.88rem;color:var(--accent-ink);font-weight:700}
-.del{border:0;background:transparent;color:var(--muted);padding:2px 6px;font-size:.8rem}
+/* budget panel */
+.panel{max-width:1200px;margin:0 auto;padding:0 16px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.stat .k{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600}
+.stat .v{font:400 2rem/1.05 var(--disp);letter-spacing:.02em}
+.stat .s{font-size:.8rem;color:var(--mute)}
+.stat.left .v{color:var(--mint)}
+.stat.left.over{border-color:var(--bad)}
+.stat.left.over .v{color:var(--bad)}
+.money{position:relative;display:inline-flex;align-items:center}
+.money span{position:absolute;left:9px;color:var(--mute);pointer-events:none}
+.money input{padding-left:20px}
+.field{background:var(--deep);border:1px solid var(--line);border-radius:8px;padding:6px 8px;min-width:0}
+.bud .field{width:110px;margin-top:4px}
+.meter{height:8px;border-radius:4px;background:var(--card);overflow:hidden;display:flex;margin:12px 0 6px}
+.meter i{display:block;height:100%;transition:width .25s}
+.meter .ps{background:var(--mint)} .meter .cw{background:var(--sky)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.8rem;color:var(--mute)}
+.legend b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+.flag{color:var(--warn);font-weight:600}
+
+/* sticky bar */
+.bar{position:sticky;top:0;z-index:20;background:rgba(4,26,49,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-top:16px}
+.bar .in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap}
+.stu{display:flex;align-items:center;gap:10px;flex:1 1 260px}
+.stu label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600}
+input[type=range]{flex:1;min-width:100px;accent-color:var(--mint)}
+.stu .field{width:56px;text-align:center;font-weight:700}
+.mini{display:flex;gap:16px;align-items:baseline}
+.mini div{font-size:.72rem;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.mini b{display:block;font:400 1.5rem/1 var(--disp);color:#fff;letter-spacing:.02em}
+.mini .lft b{color:var(--mint)} .mini .lft.over b{color:var(--bad)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.chipb{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 12px;font-size:.85rem;cursor:pointer;color:var(--mute)}
+.chipb.on{background:var(--cream);color:var(--navy);border-color:var(--cream);font-weight:600}
+
+/* rows */
+main{max-width:1200px;margin:0 auto;padding:6px 0 40px}
+.rowx{margin:22px 0 4px}
+.rh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 16px}
+.rh h2{font:400 1.7rem/1 var(--disp);letter-spacing:.03em;margin:0}
+.rh h2 small{font:500 .8rem var(--body);color:var(--mute);letter-spacing:0;margin-left:8px}
+.rh .tot{font:400 1.35rem var(--disp);color:var(--sky);letter-spacing:.03em}
+.rail{position:relative}
+.track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 16px 14px;scroll-padding:0 16px;scrollbar-width:none}
+.track::-webkit-scrollbar{display:none}
+.arrow{position:absolute;top:10px;bottom:14px;width:44px;border:0;background:linear-gradient(90deg,rgba(4,26,49,.95),rgba(4,26,49,0));color:#fff;font-size:2rem;cursor:pointer;opacity:0;transition:opacity .2s;z-index:3}
+.arrow.r{right:0;background:linear-gradient(270deg,rgba(4,26,49,.95),rgba(4,26,49,0))}
+.arrow.l{left:0}
+.rail:hover .arrow{opacity:1}
+@media (pointer:coarse){.arrow{display:none}}
+
+.card{flex:0 0 212px;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,border-color .18s,opacity .18s;position:relative}
+@media (hover:hover){.card:hover{transform:scale(1.04);border-color:var(--sky);z-index:2}}
+.card.off{opacity:.5}
+.card.off .pic{filter:grayscale(1)}
+.pic{height:128px;background:#fff;display:flex;align-items:center;justify-content:center;position:relative}
+.pic img{max-height:118px;max-width:92%;object-fit:contain}
+.pic.ph{background:linear-gradient(135deg,var(--navy),var(--card2))}
+.pic.ph .ini{font:400 2.6rem var(--disp);color:var(--sky);opacity:.8;padding:0 10px;text-align:center;line-height:.95}
+.badge{position:absolute;left:8px;top:8px;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:5px;background:var(--sky);color:var(--navy)}
+.badge.s{background:var(--mint);color:#08311f}
+.tog{position:absolute;right:8px;top:8px;width:34px;height:34px;border-radius:50%;border:2px solid #fff;background:rgba(6,37,68,.75);color:#fff;font-size:1.2rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tog.on{background:var(--mint);border-color:var(--mint);color:#08311f}
+.body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.nm{background:transparent;border:1px solid transparent;border-radius:6px;padding:2px 4px;margin:0 -4px;font-weight:600;width:calc(100% + 8px);font-size:.95rem;resize:none;min-height:0;line-height:1.25;overflow:hidden;font-family:inherit;color:#fff}
+.nm:hover{border-color:var(--line)}
+.note{font-size:.78rem;color:var(--mute);min-height:1.1em}
+.note a{color:var(--sky)}
+.need{display:inline-block;font-size:.68rem;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:0 5px;margin-left:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:auto}
+.grid2 label{font-size:.66rem;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600;display:block;margin-bottom:2px}
+.grid2 .field{width:100%;text-align:right}
+.foot{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:7px;margin-top:2px}
+.foot .k{font-size:.78rem;color:var(--mute)}
+.foot .t{font:400 1.35rem var(--disp);letter-spacing:.03em}
+.del{border:0;background:none;color:var(--bad);font-size:.78rem;cursor:pointer;padding:0;align-self:flex-start}
+.add{flex:0 0 170px;scroll-snap-align:start;border:2px dashed var(--line);border-radius:12px;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:16px;color:var(--mute);text-align:center}
+.add b{font:400 1.4rem var(--disp);color:#fff;letter-spacing:.03em}
+.add button{border:1px solid var(--sky);background:transparent;color:var(--sky);border-radius:999px;padding:7px 10px;cursor:pointer;font-weight:600;font-size:.85rem}
+.add button:hover{background:var(--sky);color:var(--navy)}
+.empty{color:var(--mute);padding:6px 16px 0;font-size:.9rem}
+
+.actions{max-width:1200px;margin:10px auto 0;padding:0 16px 40px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px 18px;font-weight:600;cursor:pointer}
+.btn.pri{background:var(--cream);color:var(--navy);border-color:var(--cream)}
+.confirm{color:var(--warn);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toast{color:var(--mint);font-weight:600}
+textarea{width:100%;min-height:200px;background:var(--deep);color:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}
+footer{max-width:1200px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font-size:.8rem}
 
 @media (max-width:760px){
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .row.head{display:none}
-  .row,.row.class{grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);grid-template-areas:"c n n" ". p q" ". k t"}
-  .row>.cb{grid-area:c}.row>.name{grid-area:n}.row>.price{grid-area:p}.row>.qty{grid-area:q}.row>.packs{grid-area:k;text-align:left}.row>.tot{grid-area:t}
-  .row.class>.tot{grid-area:k;text-align:left}
-  .mlabel{display:block;font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-  .packs,.tot{text-align:left}
+  .logo img{height:42px}
+  .card{flex-basis:186px}
+  .pic{height:112px}
+  .mini b{font-size:1.3rem}
 }
-@media (prefers-reduced-motion:no-preference){.meter i{transition:width .25s ease}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+</head>
+<body>
 
-<div class="wrap">
-  <header>
-    <div class="eyebrow">SBH Skills &amp; Training · Handyman</div>
-    <h1>Interior Painting supply budget</h1>
-    <p class="sub">Check the supplies you’re buying. Per-student items scale with class size; whole-class items are bought once. Prices are editable, and Harbor Freight and Home Depot prices are filled in where you found them. Your changes save on this device only.</p>
-  </header>
-
-  <div class="bar" aria-label="Budget summary">
-    <div class="controls">
-      <div class="ctl">
-        <label for="students">Students</label>
-        <div class="slider-row">
-          <input type="range" id="students" min="1" max="20" step="1" value="15">
-          <input type="number" id="studentsNum" class="students-num num" min="1" max="20" value="15" aria-label="Number of students">
-        </div>
-      </div>
-      <div class="ctl">
-        <label for="budget">Supply budget</label>
-        <div class="money"><span>$</span><input type="number" id="budget" class="num" min="0" step="50" value="2000"></div>
-      </div>
-      <div class="flag" id="unpriced" aria-live="polite"></div>
-    </div>
-    <div class="stats">
-      <div class="stat"><span class="k">Per student</span><span class="v" id="sPer">$0</span><span class="s" id="sPerSub">per-student items</span></div>
-      <div class="stat"><span class="k">Whole class items</span><span class="v" id="sClass">$0</span><span class="s">bought once</span></div>
-      <div class="stat"><span class="k">Total spend</span><span class="v" id="sTotal">$0</span><span class="s" id="sTotalSub"></span></div>
-      <div class="stat left ok" id="leftBox"><span class="k" id="leftLabel">Left in budget</span><span class="v" id="sLeft">$0</span><span class="s" id="sLeftSub"></span></div>
-    </div>
-    <div class="meter" role="img" id="meter" aria-label="Budget used"><i class="ps" id="mPs"></i><i class="cw" id="mCw"></i></div>
-    <div class="legend"><span><b style="background:var(--accent)"></b>Per-student items</span><span><b style="background:var(--accent-ink)"></b>Whole-class items</span><span id="pct"></span></div>
+<header class="hero"><div class="in">
+  <div class="logo"><img src="painting-img/sbh-skills-training.png" alt="SBH Skills & Training, Albert J. Sutton and Sam N. Sasson Career Division, Triangle Capital"></div>
+  <div class="brush">
+    <svg viewBox="0 0 600 200" preserveAspectRatio="none" aria-hidden="true"><path fill="#0B4E8F" d="M14 22 L60 12 L120 18 L190 6 L260 14 L330 4 L410 12 L480 6 L560 16 L596 10 L584 40 L598 70 L580 96 L596 128 L582 160 L594 190 L520 184 L450 196 L380 186 L300 198 L230 188 L150 196 L80 186 L20 194 L30 160 L6 130 L24 100 L4 70 L22 44 Z"/></svg>
+    <h1>Interior House<br>Painting</h1>
+    <div class="tag">Supply list &amp; budget</div>
   </div>
-
-  <section aria-labelledby="hStudent">
-    <div class="sec-head">
-      <div><h2 id="hStudent">Per student</h2><p>Each student gets these. Packs are rounded up to whole packs.</p></div>
-      <div class="sec-total" id="tStudent">$0</div>
-    </div>
-    <div class="list" id="listStudent"></div>
-    <div class="actions"><button type="button" id="addStudent">Add per-student item</button></div>
-  </section>
-
-  <section aria-labelledby="hClass">
-    <div class="sec-head">
-      <div><h2 id="hClass">Whole class</h2><p>Bought once for everyone: paint, primer, floor paper, patching supplies.</p></div>
-      <div class="sec-total" id="tClass">$0</div>
-    </div>
-    <div class="list" id="listClass"></div>
-    <div class="actions"><button type="button" id="addClass">Add whole-class item</button></div>
-  </section>
-
-  <div class="actions">
-    <button type="button" class="primary" id="copy">Copy shopping summary</button>
-    <button type="button" class="ghost" id="reset">Reset to starting list</button>
-    <span class="confirm" id="confirmBox" hidden>Reset every price and checkbox? <button type="button" id="confirmYes">Yes, reset</button><button type="button" class="ghost" id="confirmNo">Cancel</button></span>
-    <span class="toast" id="toast" aria-live="polite"></span>
+  <div class="dates">
+    <div class="date"><b>TUES.</b><span>17</span><small>NOV · 7–9:30 PM</small></div>
+    <div class="date"><b>THURS.</b><span>19</span><small>NOV · 7–9:30 PM</small></div>
+    <div class="date"><b>SUN.</b><span>22</span><small>NOV · 9:30–2:30</small></div>
   </div>
-  <textarea id="copyFallback" aria-label="Shopping summary" hidden style="width:100%;min-height:200px;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg)"></textarea>
+  <p class="lead">Swipe each row. Tap the ✓ to put an item in or out of the cart, and edit any name, price or quantity. Per-student items scale with the class size. Your changes save on this device only.</p>
+</div></header>
+
+<section class="panel" aria-label="Budget summary">
+  <div class="stats">
+    <div class="stat"><div class="k">Per student</div><div class="v num" id="sPer">$0</div><div class="s" id="sPerSub"></div></div>
+    <div class="stat"><div class="k">Whole class</div><div class="v num" id="sClass">$0</div><div class="s">bought once</div></div>
+    <div class="stat bud"><div class="k">Supply budget</div><div class="money"><span>$</span><input type="number" id="budget" class="field num" min="0" step="50" aria-label="Supply budget"></div></div>
+    <div class="stat left" id="leftBox"><div class="k" id="leftLabel">Left in budget</div><div class="v num" id="sLeft">$0</div><div class="s" id="sLeftSub"></div></div>
+  </div>
+  <div class="meter" role="img" id="meter"><i class="ps" id="mPs"></i><i class="cw" id="mCw"></i></div>
+  <div class="legend"><span><b style="background:var(--mint)"></b>Per-student items</span><span><b style="background:var(--sky)"></b>Whole-class items</span><span id="pct"></span><span class="flag" id="unpriced"></span></div>
+</section>
+
+<div class="bar"><div class="in">
+  <div class="stu"><label for="students">Students</label><input type="range" id="students" min="1" max="20" step="1"><input type="number" id="studentsNum" class="field num" min="1" max="20" aria-label="Number of students"></div>
+  <div class="mini"><div>Total<b class="num" id="bTotal">$0</b></div><div class="lft" id="bLeftBox"><span id="bLeftLabel">Left</span><b class="num" id="bLeft">$0</b></div></div>
+  <div class="filters" role="group" aria-label="Show">
+    <button class="chipb on" data-f="all">All</button><button class="chipb" data-f="on">In cart</button><button class="chipb" data-f="need">Needs a price</button>
+  </div>
+</div></div>
+
+<main id="rows"></main>
+
+<div class="actions">
+  <button class="btn pri" id="copy">Copy shopping summary</button>
+  <button class="btn" id="reset">Reset to starting list</button>
+  <span class="confirm" id="confirmBox" hidden>Reset every price, item and checkbox? <button class="btn" id="confirmYes">Yes, reset</button><button class="btn" id="confirmNo">Cancel</button></span>
+  <span class="toast" id="toast" aria-live="polite"></span>
+  <textarea id="copyFallback" aria-label="Shopping summary" hidden></textarea>
 </div>
+<footer>SBH Skills &amp; Training · Handyman – Learn Interior Painting · Prices from Harbor Freight and Home Depot; check the store before buying.</footer>
 
 <script>
-const DEFAULTS = {
-  students: 15, budget: 2000,
-  items: [
-    // per student: per = units each student needs, pack = units per package
-    {id:"kit",  w:"s", on:true,  name:"AVANTI premium paint kit, 9-piece", note:"Harbor Freight · tray, brush, 9″ + mini roller", price:17.99, per:1, pack:1},
-    {id:"t14",  w:"s", on:true,  name:"QUINN 14-in-1 painters tool", note:"Harbor Freight · sale price", price:3.99, per:1, pack:1},
-    {id:"scr",  w:"s", on:true,  name:"QUINN 3″ scraper (putty knife)", note:"Harbor Freight", price:5.49, per:1, pack:1},
-    {id:"tk6",  w:"s", on:true,  name:"QUINN 6″ taping knife", note:"Harbor Freight · currently unavailable", price:5.99, per:1, pack:1},
-    {id:"tm",   w:"s", on:true,  name:"PITTSBURGH 25 ft tape measure", note:"Harbor Freight · in-store only", price:4.99, per:1, pack:1},
-    {id:"pail", w:"s", on:true,  name:"Pail with brush clip", note:"Harbor Freight", price:2.99, per:1, pack:1},
-    {id:"trim", w:"s", on:true,  name:"Paint trimmer (edging guard)", note:"Harbor Freight · in-store only", price:2.49, per:1, pack:1},
-    {id:"n95",  w:"s", on:true,  name:"RANGER N95 masks, 10-pack", note:"Harbor Freight · 1 mask each, reused", price:12.99, per:1, pack:10},
-    {id:"shoe", w:"s", on:true,  name:"RANGER shoe covers, 50-pack", note:"Harbor Freight · 1 pair × 3 classes", price:11.99, per:6, pack:50},
-    {id:"glv",  w:"s", on:true,  name:"Gloves", note:"", price:null, per:1, pack:1},
-    {id:"gog",  w:"s", on:true,  name:"Goggles", note:"", price:null, per:1, pack:1},
-    {id:"spg",  w:"s", on:true,  name:"Sponges", note:"", price:null, per:1, pack:1},
-    {id:"mud",  w:"s", on:true,  name:"Mud pan", note:"", price:null, per:1, pack:1},
-    {id:"uk",   w:"s", on:true,  name:"Utility knife and blades", note:"", price:null, per:1, pack:1},
-    {id:"sand", w:"s", on:true,  name:"Sanding sponges", note:"", price:null, per:1, pack:1},
-    {id:"foam", w:"s", on:false, name:"4″ foam or mini rollers", note:"In the AVANTI kit · only if sourcing separately", price:null, per:1, pack:1},
-    {id:"tray", w:"s", on:false, name:"Paint trays and liners", note:"In the AVANTI kit · only if sourcing separately", price:null, per:1, pack:1},
-    {id:"rf",   w:"s", on:false, name:"Roller frames, small and big", note:"In the AVANTI kit · only if sourcing separately", price:null, per:1, pack:1},
-    {id:"rc",   w:"s", on:false, name:"Roller covers, 3/8″ nap", note:"In the AVANTI kit · only if sourcing separately", price:null, per:1, pack:1},
-    {id:"br",   w:"s", on:false, name:"Angled sash brush, 2–2.5″", note:"In the AVANTI kit · only if sourcing separately", price:null, per:1, pack:1},
-    // whole class
-    {id:"wp",   w:"c", on:true,  name:"Lavender wall paint, 5 gallons", note:"Match existing walls", price:null, qty:1},
-    {id:"pr",   w:"c", on:true,  name:"Primer, 1 gallon", note:"", price:null, qty:1},
-    {id:"dp",   w:"c", on:true,  name:"White semi-gloss door/trim paint, 1 gallon", note:"", price:null, qty:1},
-    {id:"fp",   w:"c", on:true,  name:"Brown masking paper, 2.5 ft × 1,000 ft", note:"Home Depot · covers the floor", price:42.50, qty:2},
-    {id:"dc",   w:"c", on:true,  name:"COVERPRO canvas drop cloth, 5 × 5 ft", note:"Harbor Freight · paint-pouring station", price:5.99, qty:1},
-    {id:"mp",   w:"c", on:true,  name:"Masking paper, 15 in × 60 yd", note:"Harbor Freight · in-store only", price:5.99, qty:2},
-    {id:"tape", w:"c", on:true,  name:"STIKTEK painter’s tape", note:"Harbor Freight", price:5.99, qty:5},
-    {id:"lin",  w:"c", on:true,  name:"9 in tray liners, 5-pack", note:"Harbor Freight · currently unavailable", price:4.99, qty:3},
-    {id:"grid", w:"c", on:true,  name:"5-gallon bucket grid", note:"Harbor Freight · only with the shared bucket", price:4.99, qty:1},
-    {id:"jc",   w:"c", on:true,  name:"Joint compound", note:"", price:null, qty:1},
-    {id:"spk",  w:"c", on:true,  name:"Spackle", note:"", price:null, qty:1},
-    {id:"mt",   w:"c", on:true,  name:"Mesh tape", note:"", price:null, qty:1},
-    {id:"mpt",  w:"c", on:true,  name:"Mesh patches", note:"", price:null, qty:1},
-    {id:"sr",   w:"c", on:true,  name:"Scrap sheetrock pieces", note:"", price:null, qty:1},
-    {id:"wood", w:"c", on:true,  name:"Wood backing pieces", note:"", price:null, qty:1},
-    {id:"ds",   w:"c", on:true,  name:"Drywall screws (assorted)", note:"", price:null, qty:1},
-    {id:"deg",  w:"c", on:true,  name:"Degreaser (TSP substitute or Krud Kutter)", note:"", price:null, qty:1},
-    {id:"rag",  w:"c", on:true,  name:"Rags / lint-free cloths", note:"", price:null, qty:1},
-    {id:"sp220",w:"c", on:true,  name:"220-grit sandpaper or liquid deglosser", note:"", price:null, qty:1},
-    {id:"tack", w:"c", on:true,  name:"Tack cloths", note:"", price:null, qty:1},
-    {id:"stir", w:"c", on:true,  name:"Stir sticks", note:"", price:null, qty:1},
-    {id:"plas", w:"c", on:true,  name:"Plastic sheeting", note:"Cover tables and the kitchen closet", price:null, qty:1},
-    {id:"ext",  w:"c", on:true,  name:"Extension cords and power strip", note:"", price:null, qty:1},
-    {id:"bkt",  w:"c", on:true,  name:"Buckets", note:"", price:null, qty:1},
-    {id:"trash",w:"c", on:true,  name:"Trash bags", note:"", price:null, qty:1},
-    {id:"vac",  w:"c", on:true,  name:"Shop vac or broom and dustpan", note:"", price:null, qty:1},
-    {id:"wedge",w:"c", on:true,  name:"Door wedges", note:"", price:null, qty:1},
-    {id:"sign", w:"c", on:true,  name:"“Wet Paint” signs", note:"", price:null, qty:1},
-    {id:"fa",   w:"c", on:true,  name:"First aid kit", note:"", price:null, qty:1},
-    {id:"vt",   w:"c", on:true,  name:"Non-contact voltage tester", note:"", price:null, qty:1},
-    {id:"stool",w:"c", on:true,  name:"Step stool", note:"", price:null, qty:1},
-    {id:"drill",w:"c", on:true,  name:"Drills with bits, batteries and chargers", note:"Shared · how many?", price:null, qty:1},
-    {id:"set",  w:"c", on:true,  name:"Screw setter bit", note:"", price:null, qty:1},
-    {id:"sd",   w:"c", on:true,  name:"Screwdrivers", note:"", price:null, qty:1},
-    {id:"jab",  w:"c", on:true,  name:"Drywall jab saw", note:"", price:null, qty:1},
-    {id:"sf",   w:"c", on:true,  name:"Stud finder", note:"", price:null, qty:1},
-    {id:"zip",  w:"c", on:true,  name:"Zip-top bags", note:"", price:null, qty:1},
-    {id:"caulk",w:"c", on:false, name:"Caulk and caulk gun", note:"Optional", price:null, qty:1}
-  ]
-};
-const KEY = "sbh-painting-budget-v1";
+const CATS = [
+  ["prep","Room Prep & Protection"],["safety","Safety"],["clean","Cleaning"],["repair","Wall Repair & Patching"],
+  ["tools","Tools"],["door","Door Prep & Painting"],["wall","Wall Painting"],["alt","Only If Not Using the AVANTI Kit"]
+];
+const HD = "https://www.homedepot.com/p/Pratt-Retail-Specialties-2-5-ft-x-1000-ft-Brown-Masking-Paper-Drop-Cloth-30-x1000-MP/326753287";
+const DEFAULTS = { students: 15, budget: 2000, items: [
+  {id:"fp",c:"prep",w:"c",on:true,img:1,name:"Brown masking paper, 2.5 ft × 1,000 ft",note:"Home Depot · covers the floor",url:HD,price:42.50,qty:2},
+  {id:"dc",c:"prep",w:"c",on:true,img:1,name:"COVERPRO canvas drop cloth, 5 × 5 ft",note:"Harbor Freight · paint-pouring station",url:"https://www.harborfreight.com/5-x-5-canvas-drop-cloth-73105.html",price:5.99,qty:1},
+  {id:"plas",c:"prep",w:"c",on:true,name:"Plastic sheeting",note:"Cover tables and the kitchen closet",price:null,qty:1},
+  {id:"ext",c:"prep",w:"c",on:true,name:"Extension cords and power strip",note:"",price:null,qty:1},
+  {id:"bkt",c:"prep",w:"c",on:true,name:"Buckets",note:"",price:null,qty:1},
+  {id:"trash",c:"prep",w:"c",on:true,name:"Trash bags",note:"",price:null,qty:1},
+  {id:"vac",c:"prep",w:"c",on:true,name:"Shop vac or broom and dustpan",note:"",price:null,qty:1},
+  {id:"wedge",c:"prep",w:"c",on:true,name:"Door wedges",note:"",price:null,qty:1},
+  {id:"sign",c:"prep",w:"c",on:true,name:"“Wet Paint” signs",note:"",price:null,qty:1},
+  {id:"n95",c:"safety",w:"s",on:true,img:1,name:"RANGER N95 masks, 10-pack",note:"Harbor Freight · 1 mask each, reused",price:12.99,per:1,pack:10},
+  {id:"shoe",c:"safety",w:"s",on:true,img:1,name:"RANGER shoe covers, 50-pack",note:"Harbor Freight · in-store only · 1 pair × 3 classes",price:11.99,per:6,pack:50},
+  {id:"glv",c:"safety",w:"s",on:true,name:"Gloves",note:"",price:null,per:1,pack:1},
+  {id:"gog",c:"safety",w:"s",on:true,name:"Goggles",note:"",price:null,per:1,pack:1},
+  {id:"fa",c:"safety",w:"c",on:true,name:"First aid kit",note:"",price:null,qty:1},
+  {id:"vt",c:"safety",w:"c",on:true,name:"Non-contact voltage tester",note:"",price:null,qty:1},
+  {id:"stool",c:"safety",w:"c",on:true,name:"Step stool",note:"",price:null,qty:1},
+  {id:"deg",c:"clean",w:"c",on:true,name:"Degreaser (TSP substitute or Krud Kutter)",note:"",price:null,qty:1},
+  {id:"spg",c:"clean",w:"s",on:true,name:"Sponges",note:"",price:null,per:1,pack:1},
+  {id:"rag",c:"clean",w:"c",on:true,name:"Rags / lint-free cloths",note:"",price:null,qty:1},
+  {id:"sr",c:"repair",w:"c",on:true,name:"Scrap sheetrock pieces",note:"",price:null,qty:1},
+  {id:"jc",c:"repair",w:"c",on:true,name:"Joint compound",note:"",price:null,qty:1},
+  {id:"spk",c:"repair",w:"c",on:true,name:"Spackle",note:"",price:null,qty:1},
+  {id:"mt",c:"repair",w:"c",on:true,name:"Mesh tape",note:"",price:null,qty:1},
+  {id:"mpt",c:"repair",w:"c",on:true,name:"Mesh patches",note:"",price:null,qty:1},
+  {id:"wood",c:"repair",w:"c",on:true,name:"Wood backing pieces",note:"",price:null,qty:1},
+  {id:"ds",c:"repair",w:"c",on:true,name:"Drywall screws (assorted)",note:"",price:null,qty:1},
+  {id:"scr",c:"repair",w:"s",on:true,img:1,name:"QUINN 3″ scraper (putty knife)",note:"Harbor Freight",price:5.49,per:1,pack:1},
+  {id:"tk6",c:"repair",w:"s",on:true,img:1,name:"QUINN 6″ taping knife",note:"Harbor Freight · currently unavailable",price:5.99,per:1,pack:1},
+  {id:"mud",c:"repair",w:"s",on:true,name:"Mud pan",note:"",price:null,per:1,pack:1},
+  {id:"uk",c:"repair",w:"s",on:true,name:"Utility knife and blades",note:"",price:null,per:1,pack:1},
+  {id:"sand",c:"repair",w:"s",on:true,name:"Sanding sponges",note:"",price:null,per:1,pack:1},
+  {id:"jab",c:"repair",w:"c",on:true,name:"Drywall jab saw",note:"",price:null,qty:1},
+  {id:"tm",c:"repair",w:"s",on:true,img:1,name:"PITTSBURGH 25 ft tape measure",note:"Harbor Freight · in-store only · students keep it",price:4.99,per:1,pack:1},
+  {id:"sf",c:"repair",w:"c",on:true,name:"Stud finder",note:"",price:null,qty:1},
+  {id:"drill",c:"tools",w:"c",on:true,name:"Drills with bits, batteries and chargers",note:"Shared",price:null,qty:1},
+  {id:"set",c:"tools",w:"c",on:true,name:"Screw setter bit",note:"",price:null,qty:1},
+  {id:"sd",c:"tools",w:"c",on:true,name:"Screwdrivers",note:"",price:null,qty:1},
+  {id:"t14",c:"tools",w:"s",on:true,img:1,name:"QUINN 14-in-1 painters tool",note:"Harbor Freight · sale price",price:3.99,per:1,pack:1},
+  {id:"zip",c:"tools",w:"c",on:true,name:"Zip-top bags",note:"",price:null,qty:1},
+  {id:"sp220",c:"door",w:"c",on:true,name:"220-grit sandpaper or liquid deglosser",note:"",price:null,qty:1},
+  {id:"tack",c:"door",w:"c",on:true,name:"Tack cloths",note:"",price:null,qty:1},
+  {id:"dp",c:"door",w:"c",on:true,name:"White semi-gloss door/trim paint, 1 gallon",note:"",price:null,qty:1},
+  {id:"mp",c:"door",w:"c",on:true,img:1,name:"Masking paper, 15 in × 60 yd",note:"Harbor Freight · in-store only",price:5.99,qty:2},
+  {id:"wp",c:"wall",w:"c",on:true,name:"Lavender wall paint, 5 gallons",note:"Match existing walls",price:null,qty:1},
+  {id:"pr",c:"wall",w:"c",on:true,name:"Primer, 1 gallon",note:"",price:null,qty:1},
+  {id:"kit",c:"wall",w:"s",on:true,img:1,name:"AVANTI premium paint kit, 9-piece",note:"Harbor Freight · tray, brush, 9″ + mini roller · students keep it",price:17.99,per:1,pack:1},
+  {id:"lin",c:"wall",w:"c",on:true,img:1,name:"9 in tray liners, 5-pack",note:"Harbor Freight · currently unavailable",price:4.99,qty:3},
+  {id:"grid",c:"wall",w:"c",on:true,img:1,name:"5-gallon bucket grid",note:"Harbor Freight · only with the shared bucket",price:4.99,qty:1},
+  {id:"pail",c:"wall",w:"s",on:true,img:1,name:"Pail with brush clip",note:"Harbor Freight · for cutting in",price:2.99,per:1,pack:1},
+  {id:"trim",c:"wall",w:"s",on:true,img:1,name:"Paint trimmer (edging guard)",note:"Harbor Freight · in-store only",price:2.49,per:1,pack:1},
+  {id:"tape",c:"wall",w:"c",on:true,img:1,name:"STIKTEK painter’s tape",note:"Harbor Freight",price:5.99,qty:5},
+  {id:"stir",c:"wall",w:"c",on:true,name:"Stir sticks",note:"",price:null,qty:1},
+  {id:"caulk",c:"wall",w:"c",on:false,name:"Caulk and caulk gun",note:"Optional",price:null,qty:1},
+  {id:"foam",c:"alt",w:"s",on:false,name:"4″ foam or mini rollers",note:"In the AVANTI kit",price:null,per:1,pack:1},
+  {id:"tray",c:"alt",w:"s",on:false,name:"Paint trays and liners",note:"In the AVANTI kit",price:null,per:1,pack:1},
+  {id:"rf",c:"alt",w:"s",on:false,name:"Roller frames, small and big",note:"In the AVANTI kit",price:null,per:1,pack:1},
+  {id:"rc",c:"alt",w:"s",on:false,name:"Roller covers, 3/8″ nap",note:"In the AVANTI kit",price:null,per:1,pack:1},
+  {id:"br",c:"alt",w:"s",on:false,name:"Angled sash brush, 2–2.5″",note:"In the AVANTI kit",price:null,per:1,pack:1}
+]};
+const KEY = "sbh-painting-budget-v2";
 const clone = o => JSON.parse(JSON.stringify(o));
-let S = load();
+let S = (() => { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && Array.isArray(s.items)) return s; } catch (e) {} return clone(DEFAULTS); })();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+let filter = "all";
 
-function load(){
-  try { const raw = localStorage.getItem(KEY); if (raw) { const s = JSON.parse(raw); if (s && Array.isArray(s.items)) return s; } } catch(e) {}
-  return clone(DEFAULTS);
-}
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
-
-const fmt = n => "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const $ = id => document.getElementById(id);
+const fmt = n => "$" + n.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
 const fmt0 = n => "$" + Math.round(n).toLocaleString("en-US");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const unpriced = it => it.price == null || it.price === "";
+const packsFor = it => Math.ceil(S.students * (Number(it.per) || 0) / Math.max(1, Number(it.pack) || 1));
+const lineTotal = it => (!it.on || unpriced(it)) ? 0 : (Number(it.price) || 0) * (it.w === "s" ? packsFor(it) : (Number(it.qty) || 0));
+const buyText = it => { if (it.w !== "s") return `Qty ${it.qty}`; const p = packsFor(it); return Number(it.pack) > 1 ? `${p} pack${p === 1 ? "" : "s"} of ${it.pack}` : `${p} to buy`; };
+const initials = n => n.replace(/[^A-Za-z0-9 ]/g, "").split(" ").filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+const visible = it => filter === "all" || (filter === "on" && it.on) || (filter === "need" && it.on && unpriced(it));
 
-function packsFor(it){ const need = S.students * (Number(it.per)||0); const pack = Math.max(1, Number(it.pack)||1); return Math.ceil(need / pack); }
-function lineTotal(it){ if (!it.on || it.price == null || it.price === "") return 0; const p = Number(it.price)||0; return it.w === "s" ? p * packsFor(it) : p * (Number(it.qty)||0); }
+function card(it){
+  const pic = it.img ? `<div class="pic"><img src="painting-img/${it.id}.jpg" alt="" loading="lazy">` : `<div class="pic ph"><span class="ini">${esc(initials(it.name) || "+")}</span>`;
+  const note = esc(it.note) + (it.url ? `${it.note ? " · " : ""}<a href="${it.url}" target="_blank" rel="noopener">View</a>` : "");
+  const qty = it.w === "s"
+    ? `<div><label for="q-${it.id}">Each student</label><input class="field num" type="number" min="0" step="1" id="q-${it.id}" data-id="${it.id}" data-f="per" value="${it.per}"></div>`
+    : `<div><label for="q-${it.id}">Quantity</label><input class="field num" type="number" min="0" step="1" id="q-${it.id}" data-id="${it.id}" data-f="qty" value="${it.qty}"></div>`;
+  return `<article class="card ${it.on ? "" : "off"}" data-card="${it.id}">
+    ${pic}<span class="badge ${it.w}">${it.w === "s" ? "Per student" : "Whole class"}</span>
+      <button class="tog ${it.on ? "on" : ""}" data-tog="${it.id}" aria-pressed="${it.on}" aria-label="${it.on ? "Remove from" : "Add to"} cart: ${esc(it.name)}">${it.on ? "✓" : "+"}</button></div>
+    <div class="body">
+      <textarea class="nm" rows="2" data-id="${it.id}" data-f="name" aria-label="Item name" id="n-${it.id}">${esc(it.name)}</textarea>
+      <div class="note">${note}${unpriced(it) ? ' <span class="need" data-need>Add price</span>' : ""}</div>
+      <div class="grid2">
+        <div><label for="p-${it.id}">Price</label><div class="money" style="display:flex"><span>$</span><input class="field num" type="number" min="0" step="0.01" id="p-${it.id}" data-id="${it.id}" data-f="price" value="${it.price ?? ""}" placeholder="—"></div></div>
+        ${qty}
+      </div>
+      <div class="foot"><span class="k" id="k-${it.id}">${buyText(it)}</span><span class="t num" id="t-${it.id}">${fmt(lineTotal(it))}</span></div>
+      ${it.custom ? `<button class="del" data-del="${it.id}">Remove item</button>` : ""}
+    </div></article>`;
+}
 
-function rowHTML(it){
-  const unpriced = it.on && (it.price == null || it.price === "");
-  const priceVal = it.price == null ? "" : it.price;
-  const nameCell = `<div class="name"><input type="text" id="n-${it.id}" data-id="${it.id}" data-f="name" value="${esc(it.name)}" aria-label="Item name">
-    <div class="note">${esc(it.note)}${unpriced ? '<span class="chip">Add price</span>' : ''}${it.custom ? ` <button type="button" class="del" data-del="${it.id}">Remove</button>` : ''}</div></div>`;
-  const price = `<div class="price"><span class="mlabel">Price</span><div class="money"><span>$</span><input type="number" min="0" step="0.01" id="p-${it.id}" data-id="${it.id}" data-f="price" value="${priceVal}" placeholder="—" aria-label="Price for ${esc(it.name)}"></div></div>`;
-  const cb = `<div class="cb"><input type="checkbox" id="c-${it.id}" data-id="${it.id}" data-f="on" ${it.on ? "checked" : ""} aria-label="Buy ${esc(it.name)}"></div>`;
-  if (it.w === "s") {
-    const packs = packsFor(it);
-    const packTxt = Number(it.pack) > 1 ? `${packs} pack${packs===1?"":"s"} of ${it.pack}` : `${packs} to buy`;
-    return `<div class="row ${it.on?"":"off"}" data-row="${it.id}">${cb}${nameCell}${price}
-      <div class="qty"><span class="mlabel">Each student</span><input type="number" min="0" step="1" id="q-${it.id}" data-id="${it.id}" data-f="per" value="${it.per}" aria-label="Units per student"></div>
-      <div class="packs" id="k-${it.id}">${packTxt}</div>
-      <div class="tot" id="t-${it.id}">${fmt(lineTotal(it))}</div></div>`;
+function render(){
+  let html = "";
+  for (const [c, title] of CATS) {
+    const all = S.items.filter(i => i.c === c);
+    const list = all.filter(visible);
+    if (!list.length && filter !== "all") continue;
+    html += `<section class="rowx" data-row="${c}"><div class="rh"><h2>${esc(title)}<small>${all.length} items</small></h2><span class="tot num" id="rt-${c}"></span></div>
+      <div class="rail"><button class="arrow l" data-scroll="-1" aria-label="Scroll left">‹</button><div class="track">${list.map(card).join("")}
+      ${filter === "all" ? `<div class="add"><b>Add an item</b><button data-add="${c}" data-w="s">+ Per student</button><button data-add="${c}" data-w="c">+ Whole class</button></div>` : ""}
+      </div><button class="arrow r" data-scroll="1" aria-label="Scroll right">›</button></div></section>`;
   }
-  return `<div class="row class ${it.on?"":"off"}" data-row="${it.id}">${cb}${nameCell}${price}
-    <div class="qty"><span class="mlabel">Qty</span><input type="number" min="0" step="1" id="q-${it.id}" data-id="${it.id}" data-f="qty" value="${it.qty}" aria-label="Quantity"></div>
-    <div class="tot" id="t-${it.id}">${fmt(lineTotal(it))}</div></div>`;
+  $("rows").innerHTML = html || `<p class="empty">Nothing here.</p>`;
+  totals();
 }
 
-function renderLists(){
-  const sHead = `<div class="row head"><span></span><span>Item</span><span>Price</span><span>Each student</span><span>To buy</span><span style="text-align:right">Total</span></div>`;
-  const cHead = `<div class="row class head"><span></span><span>Item</span><span>Price</span><span>Qty</span><span style="text-align:right">Total</span></div>`;
-  document.getElementById("listStudent").innerHTML = sHead + S.items.filter(i=>i.w==="s").map(rowHTML).join("");
-  document.getElementById("listClass").innerHTML = cHead + S.items.filter(i=>i.w==="c").map(rowHTML).join("");
-}
-
-function updateTotals(){
-  let st = 0, ct = 0, missing = 0;
-  for (const it of S.items){
+function totals(){
+  let st = 0, ct = 0, missing = 0; const rows = {};
+  for (const it of S.items) {
     const t = lineTotal(it);
     if (it.w === "s") st += t; else ct += t;
-    if (it.on && (it.price == null || it.price === "")) missing++;
-    const te = document.getElementById("t-"+it.id); if (te) te.textContent = fmt(t);
-    const ke = document.getElementById("k-"+it.id);
-    if (ke) { const p = packsFor(it); ke.textContent = Number(it.pack) > 1 ? `${p} pack${p===1?"":"s"} of ${it.pack}` : `${p} to buy`; }
-    const row = document.querySelector(`[data-row="${it.id}"]`); if (row) row.classList.toggle("off", !it.on);
+    rows[it.c] = (rows[it.c] || 0) + t;
+    if (it.on && unpriced(it)) missing++;
+    const te = $("t-" + it.id); if (te) te.textContent = fmt(t);
+    const ke = $("k-" + it.id); if (ke) ke.textContent = buyText(it);
   }
-  const total = st + ct, budget = Number(S.budget)||0, left = budget - total;
-  document.getElementById("tStudent").textContent = fmt(st);
-  document.getElementById("tClass").textContent = fmt(ct);
-  document.getElementById("sPer").textContent = fmt(S.students ? st / S.students : 0);
-  document.getElementById("sPerSub").textContent = `× ${S.students} students = ${fmt(st)}`;
-  document.getElementById("sClass").textContent = fmt(ct);
-  document.getElementById("sTotal").textContent = fmt(total);
-  document.getElementById("sTotalSub").textContent = S.students ? `${fmt(total / S.students)} per student, all in` : "";
-  const over = left < 0;
-  document.getElementById("leftLabel").textContent = over ? "Over budget" : "Left in budget";
-  document.getElementById("sLeft").textContent = fmt(Math.abs(left));
-  document.getElementById("sLeftSub").textContent = `of ${fmt0(budget)}`;
-  const lb = document.getElementById("leftBox"); lb.classList.toggle("over", over); lb.classList.toggle("ok", !over);
-  const denom = Math.max(budget, total, 1);
-  document.getElementById("mPs").style.width = (st/denom*100)+"%";
-  document.getElementById("mCw").style.width = (ct/denom*100)+"%";
+  for (const [c] of CATS) { const e = $("rt-" + c); if (e) e.textContent = fmt(rows[c] || 0); }
+  const total = st + ct, budget = Number(S.budget) || 0, left = budget - total, over = left < 0;
+  $("sPer").textContent = fmt(S.students ? st / S.students : 0);
+  $("sPerSub").textContent = `× ${S.students} students = ${fmt(st)}`;
+  $("sClass").textContent = fmt(ct);
+  $("leftLabel").textContent = over ? "Over budget" : "Left in budget";
+  $("sLeft").textContent = fmt(Math.abs(left));
+  $("sLeftSub").textContent = `Total ${fmt(total)} of ${fmt0(budget)}`;
+  $("leftBox").classList.toggle("over", over);
+  $("bTotal").textContent = fmt0(total);
+  $("bLeftLabel").textContent = over ? "Over" : "Left";
+  $("bLeft").textContent = fmt0(Math.abs(left));
+  $("bLeftBox").classList.toggle("over", over);
+  const d = Math.max(budget, total, 1);
+  $("mPs").style.width = (st / d * 100) + "%"; $("mCw").style.width = (ct / d * 100) + "%";
   const pct = budget ? Math.round(total / budget * 100) : 0;
-  document.getElementById("pct").textContent = `${pct}% of budget used`;
-  document.getElementById("meter").setAttribute("aria-label", `${pct}% of budget used`);
-  document.getElementById("unpriced").textContent = missing ? `${missing} checked item${missing===1?"":"s"} still need a price` : "";
+  $("pct").textContent = `${pct}% of budget used`;
+  $("meter").setAttribute("aria-label", `${pct}% of budget used`);
+  $("unpriced").textContent = missing ? `${missing} item${missing === 1 ? "" : "s"} in the cart still need a price` : "";
   save();
 }
 
 function setStudents(n){
-  n = Math.min(20, Math.max(1, Math.round(Number(n)||1)));
-  S.students = n;
-  document.getElementById("students").value = n;
-  document.getElementById("studentsNum").value = n;
-  updateTotals();
+  S.students = Math.min(20, Math.max(1, Math.round(Number(n) || 1)));
+  $("students").value = S.students; $("studentsNum").value = S.students;
+  totals();
 }
+$("students").addEventListener("input", e => setStudents(e.target.value));
+$("studentsNum").addEventListener("change", e => setStudents(e.target.value));
+$("budget").addEventListener("input", e => { S.budget = Number(e.target.value) || 0; totals(); });
 
-document.getElementById("students").addEventListener("input", e => setStudents(e.target.value));
-document.getElementById("studentsNum").addEventListener("change", e => setStudents(e.target.value));
-document.getElementById("budget").addEventListener("input", e => { S.budget = Number(e.target.value)||0; updateTotals(); });
-
-function onField(e){
-  const el = e.target, id = el.dataset.id, f = el.dataset.f; if (!id || !f) return;
-  const it = S.items.find(i => i.id === id); if (!it) return;
-  if (f === "on") it.on = el.checked;
-  else if (f === "name") it.name = el.value;
-  else if (f === "price") it.price = el.value === "" ? null : Number(el.value);
-  else it[f] = el.value === "" ? 0 : Number(el.value);
-  updateTotals();
-  if (f === "on" || f === "price") { // refresh the "Add price" chip without losing focus
-    const row = document.querySelector(`[data-row="${id}"] .note`);
-    if (row) { const chip = row.querySelector(".chip"); const need = it.on && (it.price == null || it.price === "");
-      if (need && !chip) row.insertAdjacentHTML("beforeend",'<span class="chip">Add price</span>'); if (!need && chip) chip.remove(); }
+const rowsEl = $("rows");
+rowsEl.addEventListener("input", e => {
+  const el = e.target, it = S.items.find(i => i.id === el.dataset.id); if (!it) return;
+  const f = el.dataset.f;
+  if (f === "name") it.name = el.value;
+  else if (f === "price") {
+    it.price = el.value === "" ? null : Number(el.value);
+    const note = el.closest(".card").querySelector(".note"), chip = note.querySelector("[data-need]");
+    if (unpriced(it) && !chip) note.insertAdjacentHTML("beforeend", ' <span class="need" data-need>Add price</span>');
+    if (!unpriced(it) && chip) chip.remove();
   }
-}
-for (const id of ["listStudent","listClass"]) {
-  const el = document.getElementById(id);
-  el.addEventListener("input", onField);
-  el.addEventListener("change", onField);
-  el.addEventListener("click", e => { const d = e.target.dataset.del; if (!d) return; S.items = S.items.filter(i => i.id !== d); renderLists(); updateTotals(); });
-}
-function addItem(w){
-  const id = "x" + Date.now().toString(36);
-  S.items.push(w === "s" ? {id, w, on:true, name:"New item", note:"", price:null, per:1, pack:1, custom:true}
-                         : {id, w, on:true, name:"New item", note:"", price:null, qty:1, custom:true});
-  renderLists(); updateTotals();
-  const inp = document.getElementById("n-"+id); if (inp) { inp.focus(); inp.select(); }
-}
-document.getElementById("addStudent").addEventListener("click", () => addItem("s"));
-document.getElementById("addClass").addEventListener("click", () => addItem("c"));
-
-const toast = msg => { const t = document.getElementById("toast"); t.textContent = msg; setTimeout(() => { if (t.textContent === msg) t.textContent = ""; }, 2500); };
-document.getElementById("reset").addEventListener("click", () => { document.getElementById("confirmBox").hidden = false; });
-document.getElementById("confirmNo").addEventListener("click", () => { document.getElementById("confirmBox").hidden = true; });
-document.getElementById("confirmYes").addEventListener("click", () => {
-  S = clone(DEFAULTS); document.getElementById("confirmBox").hidden = true;
-  document.getElementById("budget").value = S.budget; renderLists(); setStudents(S.students); toast("Reset to the starting list");
+  else it[f] = el.value === "" ? 0 : Number(el.value);
+  totals();
 });
+rowsEl.addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.tog) {
+    const it = S.items.find(i => i.id === t.dataset.tog); it.on = !it.on;
+    const c = t.closest(".card"); c.classList.toggle("off", !it.on);
+    t.classList.toggle("on", it.on); t.textContent = it.on ? "✓" : "+"; t.setAttribute("aria-pressed", it.on);
+    t.setAttribute("aria-label", `${it.on ? "Remove from" : "Add to"} cart: ${it.name}`);
+    totals(); if (filter !== "all") render();
+  } else if (t.dataset.del) {
+    S.items = S.items.filter(i => i.id !== t.dataset.del); render();
+  } else if (t.dataset.add) {
+    const id = "x" + Date.now().toString(36), w = t.dataset.w;
+    S.items.push(Object.assign({id, c:t.dataset.add, w, on:true, name:"New item", note:"", price:null, custom:true}, w === "s" ? {per:1, pack:1} : {qty:1}));
+    render();
+    const inp = $("n-" + id); if (inp) { inp.closest(".card").scrollIntoView({behavior:"smooth", inline:"nearest", block:"nearest"}); inp.focus(); inp.select(); }
+  } else if (t.dataset.scroll) {
+    const tr = t.parentElement.querySelector(".track"); tr.scrollBy({left: Number(t.dataset.scroll) * tr.clientWidth * .85, behavior:"smooth"});
+  }
+});
+document.querySelector(".filters").addEventListener("click", e => {
+  const b = e.target.closest("[data-f]"); if (!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll(".chipb").forEach(x => x.classList.toggle("on", x === b));
+  render();
+});
+
+const toast = m => { $("toast").textContent = m; setTimeout(() => { if ($("toast").textContent === m) $("toast").textContent = ""; }, 2500); };
+$("reset").onclick = () => $("confirmBox").hidden = false;
+$("confirmNo").onclick = () => $("confirmBox").hidden = true;
+$("confirmYes").onclick = () => { S = clone(DEFAULTS); $("confirmBox").hidden = true; $("budget").value = S.budget; render(); setStudents(S.students); toast("Reset to the starting list"); };
 
 function summary(){
-  const lines = [`Interior Painting supplies — ${S.students} students, budget ${fmt0(Number(S.budget)||0)}`, ""];
-  let st=0, ct=0;
-  lines.push("PER STUDENT");
-  for (const it of S.items.filter(i=>i.w==="s"&&i.on)) { const t=lineTotal(it); st+=t; const p=packsFor(it);
-    lines.push(`- ${it.name}: ${Number(it.pack)>1?`${p} pack(s) of ${it.pack}`:`${p}`} × ${it.price==null?"[price?]":fmt(Number(it.price))} = ${fmt(t)}`); }
-  lines.push("", "WHOLE CLASS");
-  for (const it of S.items.filter(i=>i.w==="c"&&i.on)) { const t=lineTotal(it); ct+=t;
-    lines.push(`- ${it.name}: ${it.qty} × ${it.price==null?"[price?]":fmt(Number(it.price))} = ${fmt(t)}`); }
-  const total = st+ct, left=(Number(S.budget)||0)-total;
-  lines.push("", `Per-student items: ${fmt(st)} (${fmt(S.students?st/S.students:0)} each)`, `Whole-class items: ${fmt(ct)}`, `Total: ${fmt(total)}`, left<0?`Over budget by ${fmt(-left)}`:`Left in budget: ${fmt(left)}`);
-  return lines.join("\n");
+  const L = [`Interior Painting supplies — ${S.students} students, budget ${fmt0(Number(S.budget) || 0)}`];
+  let total = 0;
+  for (const [c, title] of CATS) {
+    const list = S.items.filter(i => i.c === c && i.on); if (!list.length) continue;
+    L.push("", title.toUpperCase());
+    for (const it of list) { const t = lineTotal(it); total += t;
+      L.push(`- ${it.name}: ${buyText(it)} × ${unpriced(it) ? "[price?]" : fmt(Number(it.price))} = ${fmt(t)}`); }
+  }
+  const left = (Number(S.budget) || 0) - total;
+  L.push("", `Total: ${fmt(total)}`, left < 0 ? `Over budget by ${fmt(-left)}` : `Left in budget: ${fmt(left)}`);
+  return L.join("\n");
 }
-document.getElementById("copy").addEventListener("click", () => {
-  const text = summary(); const fb = document.getElementById("copyFallback");
+$("copy").onclick = () => {
+  const text = summary(), fb = $("copyFallback");
   const fallback = () => { fb.hidden = false; fb.value = text; fb.focus(); fb.select(); toast("Select all and copy the summary below"); };
-  try { navigator.clipboard.writeText(text).then(() => { fb.hidden = true; toast("Summary copied"); }, fallback); } catch(e) { fallback(); }
-});
+  try { navigator.clipboard.writeText(text).then(() => { fb.hidden = true; toast("Summary copied"); }, fallback); } catch (e) { fallback(); }
+};
 
-document.getElementById("budget").value = S.budget;
-renderLists();
+$("budget").value = S.budget;
+render();
 setStudents(S.students);
 </script>
-
-</body></html>
+</body>
+</html>
