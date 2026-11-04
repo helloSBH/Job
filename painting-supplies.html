@@ -131,6 +131,41 @@ main{max-width:1200px;margin:0 auto;padding:6px 0 40px}
 textarea{width:100%;min-height:200px;background:var(--deep);color:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}
 footer{max-width:1200px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font-size:.8rem}
 
+
+/* list view */
+.view{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.view button{border:0;background:transparent;color:var(--mute);padding:5px 12px;font-size:.85rem;cursor:pointer}
+.view button.on{background:var(--sky);color:var(--navy);font-weight:600}
+body.list .track{flex-direction:column;overflow:visible;scroll-snap-type:none;gap:0;padding:0;margin:8px 16px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+body.list .arrow,body.list .badge{display:none}
+body.list .card{flex:none;flex-direction:row;align-items:center;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;transform:none!important}
+body.list .tog{position:static;order:-1;flex:none;width:30px;height:30px;font-size:1rem;margin-left:12px}
+body.list .pic{width:56px;height:56px;flex:none;margin:8px 0 8px 10px;border-radius:8px;overflow:hidden}
+body.list .pic img{max-height:52px}
+body.list .pic.ph .ini{font-size:1.3rem}
+body.list .body{display:grid;grid-template-columns:minmax(0,1fr) 110px 96px 120px;align-items:center;column-gap:12px;row-gap:2px;padding:8px 14px 8px 12px;flex:1;min-width:0}
+body.list .nm{grid-column:1;grid-row:1}
+body.list .note{grid-column:1;grid-row:2;min-height:0}
+body.list .grid2{display:contents}
+body.list .grid2>div:nth-child(1){grid-column:2;grid-row:1/3}
+body.list .grid2>div:nth-child(2){grid-column:3;grid-row:1/3}
+body.list .foot{grid-column:4;grid-row:1/3;flex-direction:column;align-items:flex-end;border:0;padding:0;margin:0}
+body.list .del{grid-column:1;grid-row:3}
+body.list .add{flex:none;flex-direction:row;flex-wrap:wrap;align-items:center;border:0;border-radius:0;justify-content:flex-start;padding:10px 14px}
+body.list .add b{font-size:1.1rem;margin-right:6px}
+@media (max-width:760px){
+  body.list .body{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:8px}
+  body.list .grid2 label{white-space:nowrap;font-size:.6rem}
+  body.list .grid2 .field{padding-right:6px}
+  body.list .nm,body.list .note{grid-column:1/-1}
+  body.list .grid2>div:nth-child(1){grid-column:1;grid-row:3}
+  body.list .grid2>div:nth-child(2){grid-column:2;grid-row:3}
+  body.list .foot{grid-column:1/-1;grid-row:4;flex-direction:row;align-items:baseline;justify-content:space-between;margin-top:4px}
+  body.list .del{grid-row:5}
+  body.list .pic{width:44px;height:44px;align-self:flex-start;margin-top:12px}
+  body.list .pic img{max-height:40px}
+  body.list .tog{align-self:flex-start;margin-top:18px}
+}
 @media (max-width:760px){
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .logo img{height:42px}
@@ -155,7 +190,7 @@ footer{max-width:1200px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font
     <div class="date"><b>THURS.</b><span>19</span><small>NOV · 7–9:30 PM</small></div>
     <div class="date"><b>SUN.</b><span>22</span><small>NOV · 9:30–2:30</small></div>
   </div>
-  <p class="lead">Swipe each row. Tap the ✓ to put an item in or out of the cart, and edit any name, price or quantity. Per-student items scale with the class size. Your changes save on this device only.</p>
+  <p class="lead">Swipe each row, or switch to List view. Tap the ✓ to put an item in or out of the cart, and edit any name, price or quantity. Per-student items scale with the class size. Your changes save on this device only.</p>
 </div></header>
 
 <section class="panel" aria-label="Budget summary">
@@ -172,6 +207,7 @@ footer{max-width:1200px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font
 <div class="bar"><div class="in">
   <div class="stu"><label for="students">Students</label><input type="range" id="students" min="1" max="20" step="1"><input type="number" id="studentsNum" class="field num" min="1" max="20" aria-label="Number of students"></div>
   <div class="mini"><div>Total<b class="num" id="bTotal">$0</b></div><div class="lft" id="bLeftBox"><span id="bLeftLabel">Left</span><b class="num" id="bLeft">$0</b></div></div>
+  <div class="view" role="group" aria-label="View"><button data-v="cards">Cards</button><button data-v="list">List</button></div>
   <div class="filters" role="group" aria-label="Show">
     <button class="chipb on" data-f="all">All</button><button class="chipb" data-f="on">In cart</button><button class="chipb" data-f="need">Needs a price</button>
   </div>
@@ -259,6 +295,14 @@ const clone = o => JSON.parse(JSON.stringify(o));
 let S = (() => { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && Array.isArray(s.items)) return s; } catch (e) {} return clone(DEFAULTS); })();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 let filter = "all";
+let view = "cards"; try { view = localStorage.getItem("sbh-painting-view") || "cards"; } catch (e) {}
+function setView(v){
+  view = v === "list" ? "list" : "cards"; document.body.classList.toggle("list", view === "list");
+  document.querySelectorAll(".view button").forEach(b => { const on = b.dataset.v === view; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+  try { localStorage.setItem("sbh-painting-view", view); } catch (e) {}
+}
+document.querySelector(".view").addEventListener("click", e => { const b = e.target.closest("[data-v]"); if (b) setView(b.dataset.v); });
+setView(view);
 
 const $ = id => document.getElementById(id);
 const fmt = n => "$" + n.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -272,14 +316,14 @@ const initials = n => n.replace(/[^A-Za-z0-9 ]/g, "").split(" ").filter(Boolean)
 const visible = it => filter === "all" || (filter === "on" && it.on) || (filter === "need" && it.on && unpriced(it));
 
 function card(it){
-  const pic = it.img ? `<div class="pic"><img src="painting-img/${it.id}.jpg" alt="" loading="lazy">` : `<div class="pic ph"><span class="ini">${esc(initials(it.name) || "+")}</span>`;
+  const pic = it.img ? `<div class="pic"><img src="painting-img/${it.id}.jpg" alt="" loading="lazy"></div>` : `<div class="pic ph"><span class="ini">${esc(initials(it.name) || "+")}</span></div>`;
   const note = esc(it.note) + (it.url ? `${it.note ? " · " : ""}<a href="${it.url}" target="_blank" rel="noopener">View</a>` : "");
   const qty = it.w === "s"
     ? `<div><label for="q-${it.id}">Each student</label><input class="field num" type="number" min="0" step="1" id="q-${it.id}" data-id="${it.id}" data-f="per" value="${it.per}"></div>`
     : `<div><label for="q-${it.id}">Quantity</label><input class="field num" type="number" min="0" step="1" id="q-${it.id}" data-id="${it.id}" data-f="qty" value="${it.qty}"></div>`;
   return `<article class="card ${it.on ? "" : "off"}" data-card="${it.id}">
     ${pic}<span class="badge ${it.w}">${it.w === "s" ? "Per student" : "Whole class"}</span>
-      <button class="tog ${it.on ? "on" : ""}" data-tog="${it.id}" aria-pressed="${it.on}" aria-label="${it.on ? "Remove from" : "Add to"} cart: ${esc(it.name)}">${it.on ? "✓" : "+"}</button></div>
+      <button class="tog ${it.on ? "on" : ""}" data-tog="${it.id}" aria-pressed="${it.on}" aria-label="${it.on ? "Remove from" : "Add to"} cart: ${esc(it.name)}">${it.on ? "✓" : "+"}</button>
     <div class="body">
       <textarea class="nm" rows="2" data-id="${it.id}" data-f="name" aria-label="Item name" id="n-${it.id}">${esc(it.name)}</textarea>
       <div class="note">${note}${unpriced(it) ? ' <span class="need" data-need>Add price</span>' : ""}</div>
